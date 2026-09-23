@@ -1,0 +1,98 @@
+digraph ER {
+  rankdir=LR;
+  graph [fontname="Arial", bgcolor="white", splines=ortho, nodesep=0.6, ranksep=1.0];
+  node [shape=plaintext, fontname="Arial"];
+  edge [fontname="Arial", fontsize=10, color="#555555", arrowhead=crow, arrowtail=none];
+
+  Users [label=<
+    <table border="1" cellborder="0" cellspacing="0" cellpadding="6" bgcolor="white">
+      <tr><td bgcolor="#2C3E50" align="center"><font color="white"><b>users</b></font></td></tr>
+      <tr><td align="left">PK id : INTEGER</td></tr>
+      <tr><td align="left">username : VARCHAR(50)</td></tr>
+      <tr><td align="left">email : VARCHAR(100)</td></tr>
+      <tr><td align="left">password_hash : VARCHAR(255)</td></tr>
+      <tr><td align="left">role : VARCHAR(20)</td></tr>
+      <tr><td align="left">created_at : TIMESTAMP</td></tr>
+    </table>
+  >];
+
+  Stations [label=<
+    <table border="1" cellborder="0" cellspacing="0" cellpadding="6" bgcolor="white">
+      <tr><td bgcolor="#2C3E50" align="center"><font color="white"><b>stations</b></font></td></tr>
+      <tr><td align="left">PK id : INTEGER</td></tr>
+      <tr><td align="left">name : VARCHAR(100)</td></tr>
+      <tr><td align="left">latitude : DECIMAL(9,6)</td></tr>
+      <tr><td align="left">longitude : DECIMAL(9,6)</td></tr>
+      <tr><td align="left">description : TEXT</td></tr>
+      <tr><td align="left">created_at : TIMESTAMP</td></tr>
+    </table>
+  >];
+
+  Sensors [label=<
+    <table border="1" cellborder="0" cellspacing="0" cellpadding="6" bgcolor="white">
+      <tr><td bgcolor="#2C3E50" align="center"><font color="white"><b>sensors</b></font></td></tr>
+      <tr><td align="left">PK id : INTEGER</td></tr>
+      <tr><td align="left">FK station_id : INTEGER</td></tr>
+      <tr><td align="left">sensor_type : VARCHAR(20)</td></tr>
+      <tr><td align="left">model : VARCHAR(50)</td></tr>
+      <tr><td align="left">unit : VARCHAR(10)</td></tr>
+      <tr><td align="left">installed_at : DATE</td></tr>
+      <tr><td align="left">is_active : BOOLEAN</td></tr>
+    </table>
+  >];
+
+  Measurements [label=<
+    <table border="1" cellborder="0" cellspacing="0" cellpadding="6" bgcolor="white">
+      <tr><td bgcolor="#2C3E50" align="center"><font color="white"><b>measurements</b></font></td></tr>
+      <tr><td align="left">PK id : BIGINT</td></tr>
+      <tr><td align="left">FK sensor_id : INTEGER</td></tr>
+      <tr><td align="left">value : DECIMAL(10,3)</td></tr>
+      <tr><td align="left">recorded_at : TIMESTAMP</td></tr>
+    </table>
+  >];
+
+  Thresholds [label=<
+    <table border="1" cellborder="0" cellspacing="0" cellpadding="6" bgcolor="white">
+      <tr><td bgcolor="#2C3E50" align="center"><font color="white"><b>thresholds</b></font></td></tr>
+      <tr><td align="left">PK id : INTEGER</td></tr>
+      <tr><td align="left">FK station_id : INTEGER (nullable)</td></tr>
+      <tr><td align="left">sensor_type : VARCHAR(20)</td></tr>
+      <tr><td align="left">min_value : DECIMAL(10,3)</td></tr>
+      <tr><td align="left">max_value : DECIMAL(10,3)</td></tr>
+    </table>
+  >];
+
+  Alerts [label=<
+    <table border="1" cellborder="0" cellspacing="0" cellpadding="6" bgcolor="white">
+      <tr><td bgcolor="#2C3E50" align="center"><font color="white"><b>alerts</b></font></td></tr>
+      <tr><td align="left">PK id : BIGINT</td></tr>
+      <tr><td align="left">FK sensor_id : INTEGER</td></tr>
+      <tr><td align="left">FK threshold_id : INTEGER</td></tr>
+      <tr><td align="left">measured_value : DECIMAL(10,3)</td></tr>
+      <tr><td align="left">status : VARCHAR(20)</td></tr>
+      <tr><td align="left">triggered_at : TIMESTAMP</td></tr>
+      <tr><td align="left">resolved_at : TIMESTAMP</td></tr>
+    </table>
+  >];
+
+  Reports [label=<
+    <table border="1" cellborder="0" cellspacing="0" cellpadding="6" bgcolor="white">
+      <tr><td bgcolor="#2C3E50" align="center"><font color="white"><b>reports</b></font></td></tr>
+      <tr><td align="left">PK id : INTEGER</td></tr>
+      <tr><td align="left">FK user_id : INTEGER</td></tr>
+      <tr><td align="left">FK station_id : INTEGER</td></tr>
+      <tr><td align="left">period_start : DATE</td></tr>
+      <tr><td align="left">period_end : DATE</td></tr>
+      <tr><td align="left">file_format : VARCHAR(10)</td></tr>
+      <tr><td align="left">generated_at : TIMESTAMP</td></tr>
+    </table>
+  >];
+
+  Stations -> Sensors [label="1 : N", dir=back, arrowtail=none, arrowhead=crow];
+  Sensors -> Measurements [label="1 : N", dir=back, arrowtail=none, arrowhead=crow];
+  Sensors -> Alerts [label="1 : N", dir=back, arrowtail=none, arrowhead=crow];
+  Thresholds -> Alerts [label="1 : N", dir=back, arrowtail=none, arrowhead=crow];
+  Stations -> Thresholds [label="1 : N", dir=back, arrowtail=none, arrowhead=crow];
+  Users -> Reports [label="1 : N", dir=back, arrowtail=none, arrowhead=crow];
+  Stations -> Reports [label="1 : N", dir=back, arrowtail=none, arrowhead=crow];
+}
